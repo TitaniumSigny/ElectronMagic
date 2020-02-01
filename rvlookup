@@ -1,0 +1,83 @@
+'a VBA function that works like vlookup() but in the opposite direction (right to left instead of left to right)
+
+Public Function rvlookup(lookupValue As Variant, table As Range, colNum As Integer, caseSensitive As Boolean) As Variant
+
+If IsNull(lookupValue) Then
+
+    rvlookup = "#NoLookupValue"
+
+    Exit Function
+
+    End If
+
+If IsNull(colNum) Then
+
+    rvlookup = "#NoColNum"
+
+    Exit Function
+
+    End If
+
+If colNum > table.Columns.Count Then
+
+    rvlookup = "#ColNumOutOfBounds"
+
+    Exit Function
+
+    End If
+
+If colNum < 0 Then
+
+    rvlookup = "#NoNegColNums"
+
+    Exit Function
+
+    End If
+
+If colNum = 0 Then
+
+    rvlookup = "#ColNumCan'tBeZero"
+
+    Exit Function
+
+    End If
+
+If IsNull(caseSensitive) Then caseSensitive = False
+
+If caseSensitive Then
+
+    For Each c In table.Columns(table.Columns.Count).Cells
+
+        If c.Value = lookupValue Then
+
+            rvlookup = c.offset(0, 0 - (colNum - 1)).Value
+
+            If IsEmpty(rvlookup) Then rvlookup = ""
+
+            Exit Function
+
+        End If
+
+    Next
+
+Else
+
+    For Each c In table.Columns(table.Columns.Count).Cells
+
+        If c.Value = lookupValue Or c.Value = LCase(lookupValue) Or c.Value = UCase(lookupValue) Then
+
+            rvlookup = c.offset(0, 0 - (colNum - 1)).Value
+
+            If IsEmpty(rvlookup) Then rvlookup = ""
+
+            Exit Function
+
+        End If
+
+    Next
+
+End If
+
+rvlookup = "#NotFound"
+
+End Function
